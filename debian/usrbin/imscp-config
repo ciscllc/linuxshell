@@ -110,7 +110,7 @@ elif [ $choice -eq 5 ] ; then
 	mkdir /tmp/imscpbkp
 	cd /tmp/imscpbkp
 	mysqldump -u root --password=$mypass --all-databases > imscp.sql
-	tar cvfJ www.txz /var/www/virtual
+	tar cvfJ www.txz /var/www/virtual --exclude "*/backups"
 	tar cvfJ mail.txz /var/mail/virtual
 	tar cvfJ config.txz /etc/imscp 
 	cd ..
