@@ -1,18 +1,18 @@
 #!/bin/sh
 #
 # i-MSCP ConfigScript Debian
-# Version: 0.5.0
+# Version: 0.5.1
 # License: GPLv2
-# Author : i-MSCP Team, DragonZX
+# Author : i-MSCP Team, DragonZX, CISCLLC
 # Credits: i-MSCP Development Team
 #----------------------------------
 # Varibles and functions
 
-read -p "Which version of i-MSCP do you want to install (i.e. 1.3.0)?: " version
+read -p "Which version of i-MSCP do you want to install (i.e. 1.3.16)?: " version
 case $version in 
 '1.2.'*|'1.3.'*|'1.4.'*|'2.0.'*) version=$version;;
 'trunk') read -p 'choose a version of trunk 1.3/1.4: ' trunkver ;;
-*) version='1.3.0';;
+*) version='1.3.16';;
 esac
 
 clear
@@ -76,7 +76,7 @@ elif [ $choice -eq 2 ] ; then
     #==== Start i-MSCP installer ====
     perl imscp-autoinstall -r "$@"
     exit
-	# Uninsall i-MSCP
+	# Uninstall i-MSCP
 elif [ $choice -eq 3 ] ; then
 	rm -fR /usr/local/src/imscp/
 	mkdir -p /usr/local/src/imscp
@@ -97,12 +97,18 @@ elif [ $choice -eq 3 ] ; then
     #==== Start i-MSCP installer ====
     perl imscp-autoinstall -d "$@"
     exit
-	# Uninsall i-MSCP
+	# Uninstall i-MSCP
 elif [ $choice -eq 4 ] ; then
 	echo '#### UNINSTALLING an i-MSCP ####'
-    cd /var/www/imscp/engine/setup
-    perl imscp-uninstall
-    exit
+	read -p "Continue (y/n)?" choice
+	case "$choice" in 
+	y|Y ) 	cd /var/www/imscp/engine/setup
+			perl imscp-uninstall
+			exit ;;
+	n|N ) echo "no";;
+	* ) echo "invalid";;
+	esac
+    
 elif [ $choice -eq 5 ] ; then
 	echo '#### Backuping an i-MSCP ####'
 	read -p 'Please enter the MySQL root password: ' mypass
@@ -110,7 +116,7 @@ elif [ $choice -eq 5 ] ; then
 	mkdir /tmp/imscpbkp
 	cd /tmp/imscpbkp
 	mysqldump -u root --password=$mypass --all-databases > imscp.sql
-	tar cvfJ www.txz /var/www/virtual
+	tar cvfJ www.txz /var/www/virtual --exclude "*/backups"
 	tar cvfJ mail.txz /var/mail/virtual
 	tar cvfJ config.txz /etc/imscp 
 	cd ..
@@ -118,7 +124,7 @@ elif [ $choice -eq 5 ] ; then
 	cp imscp.bkp /root/imscp.bkp
 	cd /root
 	clear
-	echo Take it from root directory
+	echo Take it from root directory and copy it to a new servers root directory if you do a migration.
 	exit
 elif [ $choice -eq 6 ] ; then
 	echo '#### Restoring an i-MSCP ####'
